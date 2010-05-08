@@ -5,6 +5,7 @@ import gtk, gobject, cairo
 from sprite import Sprite
 from attackParticle import AttackParticle
 from hpParticle import HpParticle
+from shieldParticle import ShieldParticle
 
 from operator import indexOf
 
@@ -60,6 +61,7 @@ class Virus(Sprite):
         self.attackPower=0
         self.attackParticles=[]
         self.hpParticles=[]
+        self.shieldParticles=[]
 
         #suck
         self.suckingDeltaForce=0
@@ -96,7 +98,7 @@ class Virus(Sprite):
         Sprite.update(self)
         
         if state=="Running":
-            for particle in self.pushParticles:
+            for particle in self.shieldParticles:
                 particle.update()
             for particle in self.attackParticles:
                 particle.update()
@@ -174,6 +176,13 @@ class Virus(Sprite):
                 for particle in particlesToPop:
                     self.hpParticles.pop(indexOf(self.hpParticles,particle))
 
+                particlesToPop=[]
+                for particle in self.shieldParticles:
+                    if particle.isDead==True:
+                        particlesToPop.append(particle)
+                for particle in particlesToPop:
+                    self.shieldParticles.pop(indexOf(self.shieldParticles,particle))
+
                 ##Actions
                 if self.status=="Attacking":
                     self.deltaRot=0.1
@@ -186,8 +195,8 @@ class Virus(Sprite):
                         #@TODO decide attack Power with fuzzy logic depending on shileds/distance
                         #Power is represented by number of particles to launch
                         #Puny: N=10|P=4, debil: N=34|P=6, medio: N=25|P=8, fuerte: N=40|P=8, muy fuerte N=50|P=9
-                        self.attackParticleNumber=50
-                        self.attackPower=9
+                        self.attackParticleNumber=34
+                        self.attackPower=6
 
                 if self.status=="Attacking2":
                     self.deltaRot=0.1
@@ -213,11 +222,16 @@ class Virus(Sprite):
                     self.deltaRot=-0.1
                     if self.posX+self.width<100:
                         self.posX+=1
-                    if self.targetCell.hp>0:
-                        self.hpParticles.append(HpParticle(self.targetCell.posX+self.targetCell.width/2,self.targetCell.posY+self.targetCell.height/2,1,self))
-                        self.targetCell.hp-=1
+                    if self.targetCell.shield>0:
+                        self.shieldParticles.append(ShieldParticle(self.targetCell.posX+self.targetCell.width/2,self.targetCell.posY,2,self))
+                        self.targetCell.shield-=2
+                    elif len(self.shieldParticles)==0:
+                        if self.targetCell.hp>0:
+                            self.hpParticles.append(HpParticle(self.targetCell.posX+self.targetCell.width/2,self.targetCell.posY,2,self))
+                            self.targetCell.hp-=2
                     if len(self.hpParticles)==0:
                         self.state="Waiting1"
+
             else:
                 self.velX=0
                 self.velY=0
@@ -234,7 +248,7 @@ class Virus(Sprite):
                 self.posX=100-self.width
 
     def paint(self,window):
-        for particle in self.pushParticles:
+        for particle in self.shieldParticles:
             particle.paint(window)
         for particle in self.attackParticles:
             particle.paint(window)

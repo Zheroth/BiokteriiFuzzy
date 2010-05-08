@@ -111,8 +111,10 @@ class Lienzo(gtk.DrawingArea):
                 cellsToPop.append(cell)
         for cell in cellsToPop:
             self.cells.pop(indexOf(self.cells,cell))
-            if cell==self.virus[0].targetCell:
-                self.virus[0].targetCell=None
+            for virus in self.virus:
+                if cell==virus.targetCell:
+                    virus.targetCell=None
+                    break
 
         if self.currentState=="Running":
             if self.ticksToNextCell<=0:
@@ -131,7 +133,11 @@ class Lienzo(gtk.DrawingArea):
                 if not virus.isDead:
                     virus.update(self.currentState)
                     if len(self.cells)>0 and virus.targetCell==None and virus.status=="Waiting1":
-                        virus.targetCell=self.cells[len(self.cells)-1]
+                        for cell in self.cells:
+                            if cell.isAvailable:
+                                virus.targetCell=cell
+                                cell.isAvailable=False
+                                break
 
     def paint(self, widget, event):
         """Nuestro metodo de pintado propio"""
@@ -192,14 +198,6 @@ class Lienzo(gtk.DrawingArea):
                             self.objetoSeleccionado.width+40, self.objetoSeleccionado.height+40)
 
             cr.stroke()
-
-        #coso
-        if self.currentState == "Running":
-            if self.virus[0].status == "Defending":
-                cr.set_line_width(2)
-                cr.set_source_rgba(1, random.random(), random.random(), 0.7)
-                cr.arc(self.virus[0].posX+25,self.virus[0].posY+25, random.randint(40, 60),0, 360)
-                cr.stroke()
                 
         
     #Para drag & drop

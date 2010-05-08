@@ -26,7 +26,7 @@ class Cell(Sprite):
         Sprite.__init__(self,posX,posY)
         self.width=DEFAULT_WIDTH
         self.height=DEFAULT_HEIGHT
-        self.maxHp=200
+        self.maxHp=100
         self.hp=self.maxHp
         self.isDead=False
 
@@ -54,7 +54,7 @@ class Cell(Sprite):
 
         self.shield=100#random.randint(0,100)
 
-        self.deltaTransShield=0.5
+        self.deltaTransShield=1
         self.transShield=self.shield
 
         #movement
@@ -63,6 +63,9 @@ class Cell(Sprite):
 
         #effects
         self.dyingParticles=[]
+
+        #available
+        self.isAvailable=True
 
         #attributes
         self.outerShape=random.choice(OUTER_SHAPE_LIST)
@@ -111,8 +114,9 @@ class Cell(Sprite):
             self.transShield-=self.deltaTransShield
 
         if self.shield<0:
-            self.shield+=1
-            self.hp-=1
+            dif=0-self.shield
+            self.hp-=dif
+            self.shield=0
 
         if state=="Running":
             if self.type=="TrainCell":
@@ -175,6 +179,22 @@ class Cell(Sprite):
         cairo.Matrix.translate(ThingMatrix, -(self.posX+self.width/2),-(self.posY+self.height/2))
         window.transform ( ThingMatrix ) # and commit it to the context
 
+        #draw shield
+        shieldOne=max(50, min(100, self.shield))-50
+        shieldTwo=max(0, min(50, self.shield))
+
+        colorTone=random.random()
+
+        window.save()
+        window.set_line_width(2)
+        window.set_source_rgba(random.randint(50,100)/10.0,1,0.5,shieldTwo/100.0)
+        window.arc(self.posX+self.width/2, self.posY+self.height/2, self.width, 0, 2 * math.pi)
+        window.stroke()
+        
+        window.set_source_rgba(random.randint(50,100)/10.0,1,0,shieldOne/100.0)
+        window.arc(self.posX+self.width/2, self.posY+self.height/2, self.width*1.15, 0, 2 * math.pi)
+        window.stroke()
+        window.restore()
         #draw outer shape
         window.set_line_width(1)
         if self.outerShape=="Simple" or self.outerShape=="CircleStroke" or self.outerShape=="CircleFill":

@@ -7,7 +7,7 @@ from sprite import Sprite
 MAX_SIZE=10
 MIN_SIZE=5
 
-class HpParticle(Sprite):
+class ShieldParticle(Sprite):
     def __init__(self,posX, posY, power,targetCell):
         Sprite.__init__(self,posX, posY)
         self.width=random.randint(MIN_SIZE,MAX_SIZE)
@@ -30,11 +30,11 @@ class HpParticle(Sprite):
 
     def update(self):
         Sprite.update(self)
-        
+
         if self.size<=0:
             self.isDead=True
 
-        self.color=(random.random(),1,random.random())
+        self.color=(1,random.random(),random.random())
         if self.posX<self.targetCell.posX:
             self.posX+=self.velX
         if self.posX>self.targetCell.posX:
@@ -52,10 +52,11 @@ class HpParticle(Sprite):
         self.power=self.originPower-(distance*0.0034)
         self.size=self.power*self.originSize/self.originPower
         self.alpha=self.size
+        print("size: %f" % self.size)
 
         if Sprite.is_colliding_with(self,self.targetCell):
             self.isDead=True
-            self.targetCell.score+=self.power
+            self.targetCell.score-=self.power
 
 
     def paint(self,window):
