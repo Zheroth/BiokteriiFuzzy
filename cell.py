@@ -52,7 +52,7 @@ class Cell(Sprite):
         self.rot=0
         self.status=None
 
-        self.shield=100#random.randint(0,100)
+        self.shield=random.randint(0,150)
 
         self.deltaTransShield=1
         self.transShield=self.shield

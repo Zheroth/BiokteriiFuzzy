@@ -59,6 +59,8 @@ class Lienzo(gtk.DrawingArea):
                random.randint(0,100-VIRUS_WIDTH),
                random.randint(0,WINDOW_SIZE-CELL_HEIGHT),
                 ) for i in xrange(TOTAL_VIRUS)]
+        self.virus[0].policy="Fuzzy"
+        self.virus[1].policy="Random"
         self.cells=[]
         
         self.draggingObject = None
@@ -162,8 +164,9 @@ class Lienzo(gtk.DrawingArea):
         cr.line_to(100,WINDOW_SIZE-15)
         cr.set_line_width(0.6)
         cr.stroke()
-
+        
         #pintar a los agentes
+        cr.set_line_width(1)
         if self.currentState=="Training":
             for i in xrange(len(self.classificationList)):
                 text=str(self.classificationList[i])
@@ -199,7 +202,40 @@ class Lienzo(gtk.DrawingArea):
 
             cr.stroke()
                 
+        #paint score container
+        cr.set_line_width(2)
+        cr.set_source_rgba(1, 1, 1, 0.5)
+        cr.rectangle(100+15,15,570, 5)
+        cr.stroke()
+
+        score1=self.virus[1].score+0.00000001
+        score2=self.virus[0].score+0.00000001
+
+        total=score1+score2
+
+        #paint first gauge
+        cr.save()
+        width1=score1*570/total
+        cr.set_source_rgba(0, 1, 1, 1)
+        cr.rectangle(100+15,15,width1, 5)
+        cr.fill()
+
+        cr.move_to(100+15,35)
+        text="Fuzzy"
+        cr.show_text(text)
         
+        #paint second gauge
+        width2=570-width1
+        cr.set_source_rgba(1, 0.4, 0, 1)
+        cr.rectangle(100+15+width1,15,width2, 5)
+        cr.fill()
+
+        cr.move_to(670-25,35)
+        text="Random"
+        cr.show_text(text)
+        cr.restore()
+
+
     #Para drag & drop
     def button_press(self,widget,event):
         if event.button == 1:

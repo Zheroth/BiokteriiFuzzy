@@ -52,7 +52,6 @@ class ShieldParticle(Sprite):
         self.power=self.originPower-(distance*0.0034)
         self.size=self.power*self.originSize/self.originPower
         self.alpha=self.size
-        print("size: %f" % self.size)
 
         if Sprite.is_colliding_with(self,self.targetCell):
             self.isDead=True

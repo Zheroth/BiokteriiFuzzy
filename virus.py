@@ -18,6 +18,8 @@ DEFAULT_HEIGHT=50
 
 MAX_PUSH_PARTICLES=50
 
+ATTACK_DICT={"Puny":(10,4),"Weak": (34,6), "Normal": (25,8), "Strong": (40,8), "VeryStrong": (50,9)}
+DISTANCE_DICT={"Close": (1,0.01),"Near":(3,0.025), "Middle": (6,0.06), "Far": (8,0.065), "VeryFar": (10,0.09)}
 
 class Virus(Sprite):
     def __init__(self, posX=0, posY=0,
@@ -42,6 +44,7 @@ class Virus(Sprite):
         self.imagen=VIRUS_IMAGE
         self.targetCell=None
         self.status="Waiting1"
+        self.policy="Fuzzy"
 
         #movement
         self.degreeRotY=random.random()
@@ -76,11 +79,11 @@ class Virus(Sprite):
         self.rot=0
 
         #Wait ticks
-        self.totalWaitTicks=0
+        self.totalWaitTicks=100
         self.waitTicks=0
 
     def __str__(self):
-        return "Virus: %s - Score: %f" % (self.status,self.score)
+        return "Virus: %s - Score: %f" % (self.policy,self.score)
 
     def get_type(self):
         return "Virus"
@@ -104,7 +107,10 @@ class Virus(Sprite):
                 particle.update()
             for particle in self.hpParticles:
                 particle.update()
-                
+
+            if self.score<0:
+                self.score=0
+
             if abs(self.transVelY-self.velY)<=self.deltaTransY*2:
                 self.trasnVelY=self.velY
             elif self.transVelY < self.velY:
@@ -187,7 +193,6 @@ class Virus(Sprite):
                 if self.status=="Attacking":
                     self.deltaRot=0.1
                     self.waitTicks+=1
-                    print str(self.waitTicks)
                     if self.waitTicks>=self.totalWaitTicks:
                         self.waitTicks=0
                         self.status="Attacking2"
@@ -195,8 +200,11 @@ class Virus(Sprite):
                         #@TODO decide attack Power with fuzzy logic depending on shileds/distance
                         #Power is represented by number of particles to launch
                         #Puny: N=10|P=4, debil: N=34|P=6, medio: N=25|P=8, fuerte: N=40|P=8, muy fuerte N=50|P=9
-                        self.attackParticleNumber=34
-                        self.attackPower=6
+                        if self.policy=="Fuzzy":
+                            self.attackParticleNumber=25
+                            self.attackPower=8
+                        if self.policy=="Random":
+                            self.attackParticleNumber,self.attackPower=ATTACK_DICT[random.choice(ATTACK_DICT.keys())]
 
                 if self.status=="Attacking2":
                     self.deltaRot=0.1
@@ -205,11 +213,17 @@ class Virus(Sprite):
                         self.attackParticles.append(AttackParticle(self.posX+self.width/2,self.posY,self.attackPower,self.targetCell))
 
                     if not self.attackParticles:
-                        self.status="Sucking"
-                        #@TODO decide suckingForce with fuzzy logic depending on distance F=force D=delta
-                        #Muy cerca: F=1|D=0.01, cerca: F=3|D=0.025, medio: F=6|D=0.06, lejos: F=8|D=0.065, muy lejos: F=10|D=0.09
-                        self.suckingForce=3
-                        self.suckingDeltaForce=0.025
+                        self.waitTicks+=1
+                        if self.waitTicks>=self.totalWaitTicks:
+                            self.waitTicks=0
+                            self.status="Sucking"
+                            #@TODO decide suckingForce with fuzzy logic depending on distance F=force D=delta
+                            #Muy cerca: F=1|D=0.01, cerca: F=3|D=0.025, medio: F=6|D=0.06, lejos: F=8|D=0.065, muy lejos: F=10|D=0.09
+                            if self.policy=="Fuzzy":
+                                self.suckingForce=3
+                                self.suckingDeltaForce=0.025
+                            if self.policy=="Random":
+                                self.suckingForce,self.suckingDeltaForce=DISTANCE_DICT[random.choice(DISTANCE_DICT.keys())]
 
                 if self.status=="Sucking":
                     self.targetCell.posX-=self.suckingForce
@@ -223,7 +237,7 @@ class Virus(Sprite):
                     if self.posX+self.width<100:
                         self.posX+=1
                     if self.targetCell.shield>0:
-                        self.shieldParticles.append(ShieldParticle(self.targetCell.posX+self.targetCell.width/2,self.targetCell.posY,2,self))
+                        self.shieldParticles.append(ShieldParticle(self.targetCell.posX+self.targetCell.width/2,self.targetCell.posY,4,self))
                         self.targetCell.shield-=2
                     elif len(self.shieldParticles)==0:
                         if self.targetCell.hp>0:
@@ -266,6 +280,7 @@ class Virus(Sprite):
         cairo.Matrix.rotate( ThingMatrix, self.rot) # Do the rotation
         cairo.Matrix.translate(ThingMatrix, -(self.posX+self.width/2),-(self.posY+self.height/2))
         window.transform ( ThingMatrix ) # and commit it to the context
+        window.set_source_rgb(1,0,0)
         window.set_source_pixbuf(pixbuf1,self.posX,self.posY)
         window.paint()
         window.restore()
