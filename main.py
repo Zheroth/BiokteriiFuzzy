@@ -205,8 +205,8 @@ class Lienzo(gtk.DrawingArea):
         cr.rectangle(100+15,15,570, 5)
         cr.stroke()
 
-        score1=self.virus[1].score+0.00000001
-        score2=self.virus[0].score+0.00000001
+        score1=self.virus[0].score+0.00000001
+        score2=self.virus[1].score+0.00000001
 
         total=score1+score2
 
