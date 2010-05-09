@@ -220,8 +220,8 @@ class Virus(Sprite):
                             #@TODO decide suckingForce with fuzzy logic depending on distance F=force D=delta
                             #Muy cerca: F=1|D=0.01, cerca: F=3|D=0.025, medio: F=6|D=0.06, lejos: F=8|D=0.065, muy lejos: F=10|D=0.09
                             if self.policy=="Fuzzy":
-                                self.suckingForce=3
-                                self.suckingDeltaForce=0.025
+                                self.suckingForce=6
+                                self.suckingDeltaForce=0.06
                             if self.policy=="Random":
                                 self.suckingForce,self.suckingDeltaForce=DISTANCE_DICT[random.choice(DISTANCE_DICT.keys())]
 
