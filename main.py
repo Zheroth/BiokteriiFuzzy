@@ -25,9 +25,6 @@ from constants import MAX_CELLS
 virList =[]
 cellList =[]
 
-from neuralNetwork import create_trained_network
-from neuralNetwork import test_network
-from neuralNetwork import transform_cell
 
 #Lienzo es donde se pintara todo
 class Lienzo(gtk.DrawingArea):

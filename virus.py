@@ -201,8 +201,8 @@ class Virus(Sprite):
                         #Power is represented by number of particles to launch
                         #Puny: N=10|P=4, debil: N=34|P=6, medio: N=25|P=8, fuerte: N=40|P=8, muy fuerte N=50|P=9
                         if self.policy=="Fuzzy":
-                            self.attackParticleNumber=25
-                            self.attackPower=8
+                            self.attackParticleNumber=10
+                            self.attackPower=4
                         if self.policy=="Random":
                             self.attackParticleNumber,self.attackPower=ATTACK_DICT[random.choice(ATTACK_DICT.keys())]
 
