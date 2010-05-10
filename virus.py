@@ -263,6 +263,9 @@ class Virus(Sprite):
                         #Puny: N=10|P=4, debil: N=34|P=6, medio: N=25|P=8, fuerte: N=40|P=8, muy fuerte N=50|P=9
                         if self.policy=="Fuzzy":
                             print "FuzzyA"
+                            print self.targetCell
+                            print "distance"
+                            print self.distance(self, self.targetCell)
                             num = self.fuzzy_attack(self.targetCell)
                             print num
                             self.attackParticleNumber,self.attackPower=ATTACK_DICT[num]
@@ -287,8 +290,11 @@ class Virus(Sprite):
                             if self.policy=="Fuzzy":
 #                                self.suckingForce=6
 #                                self.suckingDeltaForce=0.06
-                                num = self.fuzzy_suck(self.targetCell)
                                 print "FuzzyS"
+                                print self.targetCell
+                                print "distance"
+                                print self.distance(self, self.targetCell)
+                                num = self.fuzzy_suck(self.targetCell)
                                 print num
                                 self.suckingForce,self.suckingDeltaForce=DISTANCE_DICT[num]
                             if self.policy=="Random":
