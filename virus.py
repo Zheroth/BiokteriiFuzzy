@@ -1,6 +1,11 @@
+
+from turtle import distance
 import random
 import math
 import gtk, gobject, cairo
+from math import pow, sqrt
+
+import fuzzy.storage.fcl.Reader
 
 from sprite import Sprite
 from attackParticle import AttackParticle
@@ -82,6 +87,16 @@ class Virus(Sprite):
         self.totalWaitTicks=100
         self.waitTicks=0
 
+        self.system = fuzzy.storage.fcl.Reader.Reader().load_from_file("biokteriifl.fcl")
+
+
+#    def init_fuzzy(self):
+#        self.system = fuzzy.storage.fcl.Reader.Reader().load_from_file("biokteriifl.fcl")
+#        input = {"distance":700}
+#        output = {"power": 0}
+#        self.system.calculate(input, output)
+#        print output
+
     def __str__(self):
         return "Virus: %s - Score: %f" % (self.policy,self.score)
 
@@ -96,6 +111,32 @@ class Virus(Sprite):
 
     def eat(self):
         self.status="Eating"
+
+    def distance(self, a, b):
+        return sqrt(pow(a.posX - b.posX,2) + pow(a.posY - b.posY,2))
+
+    def fuzzy_suck(self, target):
+        dist = int(self.distance(self, target))
+        input = {"distance":dist}
+        output = {"power":0}
+        self.system.calculate(input, output)
+#        print "distance"
+#        print dist
+#        print "output"
+#        print output
+#        print "lo otro"
+#        print round(output["power"],0)
+        key = int(round(output["power"],0))
+        if key == 0:
+            return "Close"
+        elif key == 1:
+            return "Near"
+        elif key == 2:
+            return "Middle"
+        elif key == 3:
+            return "Far"
+        elif key == 4:
+            return "VeryFar"
 
     def update(self,state):
         Sprite.update(self)
@@ -205,6 +246,8 @@ class Virus(Sprite):
                             self.attackPower=4
                         if self.policy=="Random":
                             self.attackParticleNumber,self.attackPower=ATTACK_DICT[random.choice(ATTACK_DICT.keys())]
+                            print "Random"
+                            print self.targetCell
 
                 if self.status=="Attacking2":
                     self.deltaRot=0.1
@@ -220,8 +263,12 @@ class Virus(Sprite):
                             #@TODO decide suckingForce with fuzzy logic depending on distance F=force D=delta
                             #Muy cerca: F=1|D=0.01, cerca: F=3|D=0.025, medio: F=6|D=0.06, lejos: F=8|D=0.065, muy lejos: F=10|D=0.09
                             if self.policy=="Fuzzy":
-                                self.suckingForce=6
-                                self.suckingDeltaForce=0.06
+#                                self.suckingForce=6
+#                                self.suckingDeltaForce=0.06
+                                num = self.fuzzy_suck(self.targetCell)
+                                print "FuzzyS"
+                                print num
+                                self.suckingForce,self.suckingDeltaForce=DISTANCE_DICT[num]
                             if self.policy=="Random":
                                 self.suckingForce,self.suckingDeltaForce=DISTANCE_DICT[random.choice(DISTANCE_DICT.keys())]
 
@@ -301,5 +348,6 @@ class Virus(Sprite):
 
             window.stroke()
             window.restore()
+
 
 

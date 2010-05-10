@@ -1,0 +1,37 @@
+FUNCTION_BLOCK biokteriifl
+	VAR_INPUT
+		distance: REAL;
+	END_VAR
+
+	VAR_OUTPUT
+		power: REAL;
+	END_VAR
+
+    FUZZIFY distance
+        TERM too_close := (0,0) (50,1) (100,0);
+        TERM close := (50,0) (150,1) (250,0);
+        TERM medium := (200,0) (300,1) (400,0);
+        TERM far := (350,0) (450, 1) (550,0);
+        TERM too_far := (500,0) (600,1);
+    END_FUZZIFY
+
+	DEFUZZIFY power
+        TERM close := 0;
+        TERM near := 1;
+        TERM middle := 2;
+        TERM far := 3;
+        TERM very_far := 4;
+        ACCU: MAX;
+        METHOD : COGS;
+        DEFAULT := 2;
+    END_DEFUZZIFY
+
+	RULEBLOCK No1
+        AND : MIN;
+        RULE 1: IF distance IS too_close THEN power IS close;
+        RULE 2: IF distance IS close THEN power IS near;
+        RULE 3: IF distance IS medium THEN power IS middle;
+        RULE 4: IF distance IS far THEN power IS far;
+        RULE 5: IF distance IS too_far THEN power IS very_far;
+    END_RULEBLOCK
+END_FUNCTION_BLOCK
