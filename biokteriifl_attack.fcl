@@ -1,0 +1,66 @@
+FUNCTION_BLOCK biokteriifl_attack
+	VAR_INPUT
+		distance: REAL;
+		shield: REAL;
+	END_VAR
+
+	VAR_OUTPUT
+		power: REAL;
+	END_VAR
+
+    FUZZIFY distance
+        TERM too_close := (0,0) (50,1) (100,0);
+        TERM close := (50,0) (150,1) (250,0);
+        TERM medium := (200,0) (300,1) (400,0);
+        TERM far := (350,0) (450, 1) (550,0);
+        TERM too_far := (500,0) (600,1);
+    END_FUZZIFY
+
+    FUZZIFY shield
+        TERM fragile := (0,0) (25,1) (40,0);
+        TERM soft := (30,0) (50,1) (65,0);
+        TERM medium := (55,0) (75,1) (90,0);
+        TERM hard := (80,0) (100, 1) (115,0);
+        TERM very_hard := (105,0) (125,1);
+    END_FUZZIFY
+
+	DEFUZZIFY power
+        TERM puny := 0;
+        TERM weak := 1;
+        TERM normal := 2;
+        TERM strong := 3;
+        TERM very_strong := 4;
+        ACCU: MAX;
+        METHOD : COGS;
+        DEFAULT := 2;
+    END_DEFUZZIFY
+
+	RULEBLOCK No1
+        AND : MIN;
+	RULE 1: IF distance IS too_close AND shield IS fragile THEN power IS puny;
+	RULE 2: IF distance IS too_close AND shield IS soft THEN power IS puny;
+	RULE 3: IF distance IS too_close AND shield IS medium THEN power IS puny;
+	RULE 4: IF distance IS too_close AND shield IS hard THEN power IS puny;
+	RULE 5: IF distance IS too_close AND shield IS very_hard THEN power IS puny;
+	RULE 6: IF distance IS close AND shield IS fragile THEN power IS puny;
+	RULE 7: IF distance IS close AND shield IS soft THEN power IS puny;
+	RULE 8: IF distance IS close AND shield IS medium THEN power IS puny;
+	RULE 9: IF distance IS close AND shield IS hard THEN power IS puny;
+	RULE 10: IF distance IS close AND shield IS very_hard THEN power IS weak;
+	RULE 11: IF distance IS medium AND shield IS fragile THEN power IS puny;
+	RULE 12: IF distance IS medium AND shield IS soft THEN power IS puny;
+	RULE 13: IF distance IS medium AND shield IS medium THEN power IS puny;
+	RULE 14: IF distance IS medium AND shield IS hard THEN power IS weak;
+	RULE 15: IF distance IS medium AND shield IS very_hard THEN power IS normal;
+	RULE 16: IF distance IS far AND shield IS fragile THEN power IS puny;
+	RULE 17: IF distance IS far AND shield IS soft THEN power IS puny;
+	RULE 18: IF distance IS far AND shield IS medium THEN power IS weak;
+	RULE 19: IF distance IS far AND shield IS hard THEN power IS normal;
+	RULE 20: IF distance IS far AND shield IS very_hard THEN power IS strong;
+	RULE 21: IF distance IS too_far AND shield IS fragile THEN power IS puny;
+	RULE 22: IF distance IS too_far AND shield IS soft THEN power IS weak;
+	RULE 23: IF distance IS too_far AND shield IS medium THEN power IS normal;
+	RULE 24: IF distance IS too_far AND shield IS hard THEN power IS strong;
+	RULE 25: IF distance IS too_far AND shield IS very_hard THEN power IS very_strong;
+    END_RULEBLOCK
+END_FUNCTION_BLOCK

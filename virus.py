@@ -88,6 +88,7 @@ class Virus(Sprite):
         self.waitTicks=0
 
         self.system = fuzzy.storage.fcl.Reader.Reader().load_from_file("biokteriifl.fcl")
+        self.systemAttack = fuzzy.storage.fcl.Reader.Reader().load_from_file("biokteriifl_attack.fcl")
 
 
 #    def init_fuzzy(self):
@@ -137,6 +138,25 @@ class Virus(Sprite):
             return "Far"
         elif key == 4:
             return "VeryFar"
+
+    def fuzzy_attack(self, target):
+        dist = int(self.distance(self, target))
+        shield = int(target.shield)
+        input = {"distance":dist,"shield":shield}
+        output = {"power":0}
+        self.systemAttack.calculate(input, output)
+        key = int(round(output["power"],0))
+        if key == 0:
+            return "Puny"
+        elif key == 1:
+            return "Weak"
+        elif key == 2:
+            return "Normal"
+        elif key == 3:
+            return "Strong"
+        elif key == 4:
+            return "VeryStrong"
+
 
     def update(self,state):
         Sprite.update(self)
@@ -242,8 +262,10 @@ class Virus(Sprite):
                         #Power is represented by number of particles to launch
                         #Puny: N=10|P=4, debil: N=34|P=6, medio: N=25|P=8, fuerte: N=40|P=8, muy fuerte N=50|P=9
                         if self.policy=="Fuzzy":
-                            self.attackParticleNumber=10
-                            self.attackPower=4
+                            print "FuzzyA"
+                            num = self.fuzzy_attack(self.targetCell)
+                            print num
+                            self.attackParticleNumber,self.attackPower=ATTACK_DICT[num]
                         if self.policy=="Random":
                             self.attackParticleNumber,self.attackPower=ATTACK_DICT[random.choice(ATTACK_DICT.keys())]
                             print "Random"
