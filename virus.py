@@ -99,7 +99,7 @@ class Virus(Sprite):
 #        print output
 
     def __str__(self):
-        return "Virus: %s - Score: %f" % (self.policy,self.score)
+        return "Virus: %s - Score: %.2f" % (self.policy,self.score)
 
     def get_type(self):
         return "Virus"
@@ -262,16 +262,17 @@ class Virus(Sprite):
                         #Power is represented by number of particles to launch
                         #Puny: N=10|P=4, debil: N=34|P=6, medio: N=25|P=8, fuerte: N=40|P=8, muy fuerte N=50|P=9
                         if self.policy=="Fuzzy":
-                            print "FuzzyA"
-                            print self.targetCell
-                            print "distance"
-                            print self.distance(self, self.targetCell)
+                            print '-'*30
+                            print "Fuzzy Virus Attacking"
+                            print "Target:",self.targetCell
+                            print "Distance:", self.distance(self, self.targetCell), "->",
                             num = self.fuzzy_attack(self.targetCell)
                             print num
                             self.attackParticleNumber,self.attackPower=ATTACK_DICT[num]
+                            print '-'*30
                         if self.policy=="Random":
                             self.attackParticleNumber,self.attackPower=ATTACK_DICT[random.choice(ATTACK_DICT.keys())]
-                            print "Random"
+                            print "Random Virus Attacking"
                             print self.targetCell
 
                 if self.status=="Attacking2":
@@ -290,13 +291,14 @@ class Virus(Sprite):
                             if self.policy=="Fuzzy":
 #                                self.suckingForce=6
 #                                self.suckingDeltaForce=0.06
-                                print "FuzzyS"
-                                print self.targetCell
-                                print "distance"
-                                print self.distance(self, self.targetCell)
+                                print '-'*30
+                                print "Fuzzy Virus Sucking Energy"
+                                print "Target:", self.targetCell
+                                print "Distance:", self.distance(self, self.targetCell), "->",
                                 num = self.fuzzy_suck(self.targetCell)
                                 print num
                                 self.suckingForce,self.suckingDeltaForce=DISTANCE_DICT[num]
+                                print '-'*30
                             if self.policy=="Random":
                                 self.suckingForce,self.suckingDeltaForce=DISTANCE_DICT[random.choice(DISTANCE_DICT.keys())]
 

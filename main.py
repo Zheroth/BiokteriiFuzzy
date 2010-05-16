@@ -291,19 +291,7 @@ class Main(gtk.Window):
         filemenu = gtk.Menu()
         filem = gtk.MenuItem("Actions")
         filem.set_submenu(filemenu)
-
-        annealMenu = gtk.MenuItem("Reset & Train")
-        annealMenu.connect("activate", self.lienzo.reset)
-        filemenu.append(annealMenu)
-
-        annealMenu = gtk.MenuItem("Start Simulation")
-        annealMenu.connect("activate", self.lienzo.run_simulation)
-        filemenu.append(annealMenu)
-
-        annealMenu = gtk.MenuItem("Test random cell")
-        #annealMenu.connect("activate", None)
-        filemenu.append(annealMenu)
-
+        
         exit = gtk.MenuItem("Exit")
         exit.connect("activate", gtk.main_quit)
         filemenu.append(exit)

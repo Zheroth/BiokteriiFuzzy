@@ -91,7 +91,7 @@ class Cell(Sprite):
             return self.innerColor
 
     def __str__(self):
-        return self.name + "[L:%d,S:%d]" % (self.hp,self.transShield)
+        return self.name + "[Life:%d,Shield:%d]" % (self.hp,self.transShield)
 
     def get_type(self):
         return "Cell"
