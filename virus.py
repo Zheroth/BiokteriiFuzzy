@@ -5,7 +5,10 @@ import math
 import gtk, gobject, cairo
 from math import pow, sqrt
 
+import fuzzy
+import antlr3
 import fuzzy.storage.fcl.Reader
+
 
 from sprite import Sprite
 from attackParticle import AttackParticle
@@ -87,8 +90,8 @@ class Virus(Sprite):
         self.totalWaitTicks=100
         self.waitTicks=0
 
-        self.system = fuzzy.storage.fcl.Reader.Reader().load_from_file("biokteriifl.fcl")
-        self.systemAttack = fuzzy.storage.fcl.Reader.Reader().load_from_file("biokteriifl_attack.fcl")
+        self.system = fuzzy.storage.fcl.Reader.Reader().load_from_file("./resources/biokteriifl.fcl")
+        self.systemAttack = fuzzy.storage.fcl.Reader.Reader().load_from_file("./resources/biokteriifl_attack.fcl")
 
 
 #    def init_fuzzy(self):
